@@ -1,8 +1,10 @@
 #include "plugin.h"
 #include <dirent.h>
-#include <dlfcn.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+#include <dlfcn.h>
+
 
 static void findAllPlugins(const std::string& path, std::list<std::string>& pluginNames)
 {

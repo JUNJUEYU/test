@@ -18,7 +18,7 @@ RPATH=./lib/inc
 TARGET=$(OUT_PATH)fakeData
 
 # LIB=-lm -lpthread -lrt -lcurl -leasylog -lssl -lcrypto -L $(STATIC_LIB_PATH) -L $(SHARED_LIB_PATH) -Wl,-rpath=$(RPATH)
-LIB=-lm -lpthread -lrt  -L $(STATIC_LIB_PATH) -L $(SHARED_LIB_PATH) -Wl,-rpath=$(RPATH)
+LIB=-lm -lpthread -lrt -ldl -L $(STATIC_LIB_PATH) -L $(SHARED_LIB_PATH) -Wl,-rpath=$(RPATH)
 CFLAGS= -g -I $(INC_PATH) -I $(STATIC_LIB_INC) -I $(SHARED_LIB_INC) $(LIB)
 CPPFLAGS= -g  -I $(INC_PATH) -I $(STATIC_LIB_INC) -I $(SHARED_LIB_INC) $(LIB)
 
