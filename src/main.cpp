@@ -11,6 +11,8 @@
 #include <stdio.h>
 //include exit
 #include <stdlib.h>
+//include sqlite3
+#include <sqlite3.h>
 
 using namespace std;
 
@@ -80,6 +82,8 @@ private:
     pthread_mutex_t mutex;
     pthread_cond_t cond;
 };
+
+
 
 
 
