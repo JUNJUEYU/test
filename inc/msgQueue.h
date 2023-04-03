@@ -28,7 +28,7 @@ public:
         while (queue.empty()) {
             pthread_cond_wait(&cond, &mutex);
         }
-        T value = queue.front();
+        T value = queue.front();  
         queue.pop();
         pthread_mutex_unlock(&mutex);
         return value;

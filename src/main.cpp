@@ -39,6 +39,9 @@ void findAllPlugins(const std::string &path, std::list<std::string> &pluginNames
     closedir(dir);
 }
 
+
+//
+ 
 int main(int argc, char **argv)
 {
     MessageQueue<int> queue;
