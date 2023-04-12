@@ -3,7 +3,8 @@
 #include <iostream>
 #include <string>
 #include <list>
-
+#include "pluginAPI.h"
+using namespace std;
 
 //插件
 class Plugin {
@@ -12,17 +13,17 @@ public:
     virtual void stop() = 0;
 };
 
-//插件管理器
+//插件注册
 class PluginManager {
 public:
     PluginManager();
     void loadPlugins();
-    void startPlugins();
-    void stopPlugins() ;
-    void unloadPlugins() ;
+    void unloadPlugins();
+    ProtAPI *getProt(uint16_t version);
+
 private:
         std::list<std::string> pluginNames;
-        std::list<Plugin*> plugins;
+        std::list<ProtAPI *> plugins;
 };
 
 /* ----- End of file ----- */

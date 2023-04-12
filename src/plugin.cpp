@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <dlfcn.h>
+#include "log.h"
 
 
 static void findAllPlugins(const std::string& path, std::list<std::string>& pluginNames)
@@ -12,8 +13,8 @@ static void findAllPlugins(const std::string& path, std::list<std::string>& plug
     struct dirent *ptr;
     if ((dir = opendir(path.c_str())) == NULL)
     {
-        perror("Open dir error...");
-        exit(1);
+        Log::print("Open dir error...");
+        return;
     }
 
     while ((ptr = readdir(dir)) != NULL)
@@ -47,43 +48,40 @@ void PluginManager::loadPlugins()
             std::cout << "dlopen " << pluginPath << " failed" << std::endl;
             continue;
         }
-        Plugin *(*create)();
-        create = (Plugin * (*)()) dlsym(handle, "create");
+        ProtAPI *(*create)();
+        create = (ProtAPI * (*)()) dlsym(handle, "create");
         if (create == NULL)
         {
             std::cout << "dlsym create failed" << std::endl;
             continue;
         }
-        Plugin *plugin = create();
+        ProtAPI *plugin = create();
         plugins.push_back(plugin);
     }
 }
 
-void PluginManager::startPlugins()
-{
-    for (std::list<Plugin *>::iterator it = plugins.begin(); it != plugins.end(); it++)
-    {
-        Plugin *plugin = *it;
-        plugin->start();
-    }
-}
 
-void PluginManager::stopPlugins()
-{
-    for (std::list<Plugin *>::iterator it = plugins.begin(); it != plugins.end(); it++)
-    {
-        Plugin *plugin = *it;
-        plugin->stop();
-    }
-}
 
 void PluginManager::unloadPlugins()
 {
-    for (std::list<Plugin *>::iterator it = plugins.begin(); it != plugins.end(); it++)
+    for (std::list<ProtAPI *>::iterator it = plugins.begin(); it != plugins.end(); it++)
     {
-        Plugin *plugin = *it;
+        ProtAPI *plugin = *it;
         delete plugin;
     }
 }
 
+
+ProtAPI *PluginManager::getProt(uint16_t version)
+{
+    for (std::list<ProtAPI *>::iterator it = plugins.begin(); it != plugins.end(); it++)
+    {
+        ProtAPI *plugin = *it;
+        if (plugin->getVersion() == version)
+        {
+            return plugin;
+        }
+    }
+    return NULL;
+}
 /* ----- End of file ----- */

@@ -2,6 +2,7 @@
 #include <queue>
 #include <pthread.h>
 
+
 //泛型阻塞消息队列
 template<typename T>
 class MessageQueue {

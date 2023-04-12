@@ -3,10 +3,13 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/inc",
+                "${workspaceFolder}/lib/inc",
+                "${workspaceFolder}/test/inc",
+                "/home/yjj/library/paho.mqtt.c-master/install/feiling/include"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "/home/yjj/tool/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-g++",
             "intelliSenseMode": "linux-gcc-x64",
             "cStandard": "c99",
             "cppStandard": "c++03"

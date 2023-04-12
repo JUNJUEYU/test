@@ -40,7 +40,9 @@
 			"streambuf": "cpp",
 			"utility": "cpp",
 			"typeinfo": "cpp",
-			"list": "cpp"
+			"list": "cpp",
+			"string": "cpp",
+			"mutex": "cpp"
 		}
 	}
 }
