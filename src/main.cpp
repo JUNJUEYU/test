@@ -4,25 +4,34 @@
 #include "protocolStack.h"
 #include "tools.h"
 #include "log.h"
-#include "threadComRead.h"
+#include "taskComRead.h"
 #include <stdlib.h>
 #include "test.h"
+#include "ts30Event.h"
+#include "threadPool.h"
+#include <memory>
 using namespace std;
 
+static void *task(void *arg)
+{
+    auto_ptr<Event> event((Event *)arg);
+    event->run();
+    return NULL;
+}
 
 int main(int argc, char **argv)
 {
-    ProtocolStack ps;
-    // vector<uint8_t> data = packDataTest();
+    MessageQueue<string> cmdMsgQ;
+    MessageQueue<vector<uint8_t> > devMsgQ;
+    SubDeviceManager &devManager = SubDeviceManager::getInstance();
+    ThreadManager &tManager = ThreadManager::getInstance();
 
-    // Log::print("data: ", data);
+    EventMaker &eventMaker = TS30Event::getInstance();
+    ThreadPool &pool = ThreadPool::getInstance(); 
 
-    // Msg *msg = ps.getDeviceMsg(data);
-    // Log::print("msg: ", msg->getHexMsg());
-    // delete msg;
+    Event *event1 = eventMaker.createEvent(NULL,"test1 HAHAH");
+    pool.addTask(task, event1);
+    pool.addTask(taskComRead, NULL);
 
-    ThreadManager &tm = ThreadManager::getInstance();
-    tm.addThread(new ComReadThread);
-    tm.startAll();
-    tm.joinAll();
+    pool.joinAll();
 }

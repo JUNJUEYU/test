@@ -12,6 +12,11 @@ void Log::print(const char *msg, int value)
     cout<<msg<<value<<endl;
 }
 
+void Log::print(const char *msg, const char *value)
+{
+    cout<<msg<<value<<endl;
+}
+
 void Log::print(const char *msg, vector<uint8_t> value)
 {
     cout<<msg;

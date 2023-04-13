@@ -1,7 +1,10 @@
 #pragma once
 #include <queue>
 #include <pthread.h>
-
+#include <string>
+#include <vector>
+#include <stdint.h>
+using namespace std;
 
 //泛型阻塞消息队列
 template<typename T>
@@ -47,5 +50,27 @@ private:
     pthread_mutex_t mutex;
     pthread_cond_t cond;
 };
+
+class NetMsgSendQueue : public MessageQueue<string> {
+public:
+    static NetMsgSendQueue &getInstance();
+private:
+    NetMsgSendQueue();
+    ~NetMsgSendQueue();
+    NetMsgSendQueue(const NetMsgSendQueue &other){};
+    NetMsgSendQueue &operator=(const NetMsgSendQueue &other){};
+};
+
+class DevMsgSendQueue : public MessageQueue<vector<uint8_t> > {
+public:
+    static DevMsgSendQueue &getInstance();
+private:
+    DevMsgSendQueue() ;
+    ~DevMsgSendQueue();
+    DevMsgSendQueue(const DevMsgSendQueue &other){};
+    DevMsgSendQueue &operator=(const DevMsgSendQueue &other){};
+};
+
+
 
 /* ----- End of file ----- */

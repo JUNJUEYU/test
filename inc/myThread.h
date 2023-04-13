@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <vector>
 #include "log.h"
+#include "tools.h"
 
 using namespace std;
 class Thread
@@ -41,11 +42,13 @@ public:
 
     void addThread(Thread *thread)
     {
+        Lock lock(mutex_m);
         threadList_m.push_back(thread);
     };
 
     void startAll()
     {
+        Lock lock(mutex_m);
         vector<Thread *>::iterator it;
         for (it = threadList_m.begin(); it != threadList_m.end(); it++)
         {
@@ -77,6 +80,7 @@ private:
     ThreadManager(const ThreadManager &){};
 
     std::vector<Thread *> threadList_m;
+    pthread_mutex_t mutex_m;
 };
 
 /* ----- End of file ----- */

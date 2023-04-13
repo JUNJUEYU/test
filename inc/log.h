@@ -11,6 +11,7 @@ class Log{
     public:
     static void print(const char *msg);
     static void print(const char *msg, int value);
+    static void print(const char *msg, const char *value);
     static void print(const char *msg, vector<uint8_t> value);
 };
 

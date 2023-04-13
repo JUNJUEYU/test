@@ -23,7 +23,7 @@ class Topology {
         vector<string> devSnList_m;
 };
 
-class SubDevice{
+class SubDevice {
     public:
         SubDevice(const string &sn, ProtAPI *port):
             pProt_m(port),
@@ -49,9 +49,6 @@ class SubDevice{
         uint32_t survivalTime_m;
         uint32_t lastHeartTimeStamp_m;
 };
-
-
-
 
 //协议管理
 class SubDeviceManager {

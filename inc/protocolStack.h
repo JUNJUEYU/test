@@ -52,30 +52,50 @@ class ZigAppLayer
         ZigAppLayer(uint8_t, uint32_t);
         ZigAppLayer(uint8_t, uint32_t, uint16_t);
         vector<uint8_t> getData();
-        string getType();
-        string getSn(){
-            return sn_m;
-        }
+        uint16_t getType();
+        uint16_t getMsgID();
 
     private:
-        string sn_m;
         uint16_t zid_m;
-        uint8_t type_m;
-        uint8_t subType_m;
+        uint16_t type_m;
+        uint16_t msgID_m;
         vector<uint8_t> outData_m;
 };
 
-class ProtocolStack
-{
+// class ProtocolStack
+// {
+//     public:
+//         Msg *getDeviceMsg(const vector<uint8_t> &);
+//         Msg *getDeviceMsg(const string &);
+
+
+
+//     private:
+//         vector<uint8_t> packNetAccessAck(uint8_t, uint32_t);
+//         vector<uint8_t> packNetAccessAck(uint8_t, uint32_t, uint16_t);
+//         MsgDev *devAccessNet(ZigAppLayer &appLayer, uint16_t ver, const vector<uint8_t> &src);
+
+// };
+
+class ProtocolStackZigbee{
     public:
-        Msg *getDeviceMsg(const vector<uint8_t> &);
-        Msg *getDeviceMsg(const string &);
+        ProtocolStackZigbee(const vector<uint8_t> &data);
+        ~ProtocolStackZigbee();
 
+        vector<uint8_t> getData();
+        uint16_t getZid();
+        uint32_t getSrcNid();
+        uint32_t getTarNid();
+        uint16_t getProtVer();
+        uint16_t getType();
+    
     private:
-        vector<uint8_t> packNetAccessAck(uint8_t, uint32_t);
-        vector<uint8_t> packNetAccessAck(uint8_t, uint32_t, uint16_t);
-        MsgDev *devAccessNet(ZigAppLayer &appLayer, uint16_t ver, const vector<uint8_t> &src);
-
+        vector<uint8_t> data_m;
+        uint16_t zid_m;
+        uint32_t srcNid_m;
+        uint32_t tarNid_m;
+        uint16_t protVer_m;
+        uint16_t type_m;
 };
 
 /* ----- End of file ----- */

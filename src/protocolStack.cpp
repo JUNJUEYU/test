@@ -143,9 +143,7 @@ bool ZigTransLayer::integrity()
 
 ZigAppLayer::ZigAppLayer(const vector<uint8_t> &src)
 {
-    type_m = src[0];
-    subType_m = src[1];
-    sn_m.append(src.begin() + 2, src.end());
+    type_m = src[0] << 8 | src[1];
     outData_m.insert(outData_m.end(), src.begin() + 4, src.end());
 }
 
@@ -154,24 +152,14 @@ vector<uint8_t> ZigAppLayer::getData()
     return outData_m;
 }
 
-string ZigAppLayer::getType()
+uint16_t ZigAppLayer::getType()
 {
-    if (1 != type_m)
-    {
-        return "Others";
-    }
+    return type_m;
+}
 
-    if (1 == subType_m)
-    {
-        return "Net Access Dynamic";
-    }
-
-    if (2 == subType_m)
-    {
-        return "Net Access Static";
-    }
-
-    return "false";
+uint16_t ZigAppLayer::getMsgID()
+{
+    return msgID_m;
 }
 
 ZigAppLayer::ZigAppLayer(uint8_t result, uint32_t nid)
@@ -215,95 +203,157 @@ ZigAppLayer::ZigAppLayer(uint8_t result, uint32_t nid, uint16_t zid)
     outData_m.push_back((zid >> 8) & 0xff);
 }
 
-vector<uint8_t> ProtocolStack::packNetAccessAck(uint8_t result, uint32_t nid)
+// vector<uint8_t> ProtocolStack::packNetAccessAck(uint8_t result, uint32_t nid)
+// {
+//     SubDeviceManager &subDevManager = SubDeviceManager::getInstance();
+//     ZigAppLayer appLayer(result, nid);
+//     ZigTransLayer transLayer(appLayer.getData(), 0, 0, 0);
+// }
+
+// vector<uint8_t> ProtocolStack::packNetAccessAck(uint8_t result, uint32_t nid, uint16_t zid)
+// {
+//     SubDeviceManager &subDevManager = SubDeviceManager::getInstance();
+//     ZigAppLayer appLayer(result, nid, zid);
+//     ZigTransLayer transLayer(appLayer.getData(),
+//                              subDevManager.getVer(nid),
+//                              nid,
+//                              GW_NID);
+//     ZigNetLayer netLayer(transLayer.getData(), zid);
+//     return netLayer.getData();
+// }
+
+// MsgDev *ProtocolStack::devAccessNet(ZigAppLayer &appLayer, uint16_t ver, const vector<uint8_t> &src)
+// {
+//     MsgDev *msgDev = NULL;
+//     SubDeviceManager &subDevManager = SubDeviceManager::getInstance();
+
+//     if ("Net Access Dynamic" == appLayer.getType())
+//     {
+//         Log::print("Net Access Dynamic");
+//         if (!subDevManager.creatSubDev(appLayer.getSn(), ver))
+//         {
+//             msgDev = new MsgDev(packNetAccessAck(1, 0, 0));
+//             goto exit;
+//         }
+//         msgDev = new MsgDev(packNetAccessAck(0,
+//                                              subDevManager.getNid(appLayer.getSn()),
+//                                              subDevManager.getZid(appLayer.getSn())));
+//     }
+//     else if ("Net Access Static" == appLayer.getType())
+//     {
+//         Log::print("Net Access Static");
+//         uint16_t zid = src[20] << 8 | src[21];
+//         if (!subDevManager.creatSubDev(appLayer.getSn(), ver))
+//         {
+//             msgDev = new MsgDev(packNetAccessAck(1, 0));
+//             goto exit;
+//         }
+//         msgDev = new MsgDev(packNetAccessAck(0, subDevManager.getNid(appLayer.getSn())));
+//     }
+//     else
+//     {
+//     }
+
+// exit:
+//     return msgDev;
+// }
+
+// Msg *ProtocolStack::getDeviceMsg(const vector<uint8_t> &src)
+// {
+//     Msg *msg = NULL;
+//     string ret;
+
+//     ZigNetLayer netLayer(src);
+//     if (!netLayer.unpack())
+//     {
+//         Log::print("NetLayer unpack failed");
+//         return NULL;
+//     }
+
+//     ZigTransLayer transLayer(netLayer.getData());
+//     if (!transLayer.unpack())
+//     {
+//         Log::print("TransLayer unpack failed");
+//         return NULL;
+//     }
+
+//     SubDeviceManager &subDevManager = SubDeviceManager::getInstance();
+//     if (!subDevManager.verify(transLayer.getSrcNid()))
+//     {
+//         Log::print("Verify failed");
+//         return NULL;
+//     }
+
+//     ZigAppLayer appLayer(transLayer.getData());
+//     msg = devAccessNet(appLayer, transLayer.getProtVer(), appLayer.getData());
+
+//     return msg;
+// }
+
+// Msg *ProtocolStack::getDeviceMsg(const string &src)
+// {
+// }
+
+ProtocolStackZigbee::ProtocolStackZigbee(const vector<uint8_t> &msg)
 {
-    SubDeviceManager &subDevManager = SubDeviceManager::getInstance();
-    ZigAppLayer appLayer(result, nid);
-    ZigTransLayer transLayer(appLayer.getData(), 0, 0, 0);
-}
-
-vector<uint8_t> ProtocolStack::packNetAccessAck(uint8_t result, uint32_t nid, uint16_t zid)
-{
-    SubDeviceManager &subDevManager = SubDeviceManager::getInstance();
-    ZigAppLayer appLayer(result, nid, zid);
-    ZigTransLayer transLayer(appLayer.getData(),
-                             subDevManager.getVer(nid),
-                             nid,
-                             GW_NID);
-    ZigNetLayer netLayer(transLayer.getData(), zid);
-    return netLayer.getData();
-}
-
-MsgDev *ProtocolStack::devAccessNet(ZigAppLayer &appLayer, uint16_t ver, const vector<uint8_t> &src)
-{
-    MsgDev *msgDev = NULL;
-    SubDeviceManager &subDevManager = SubDeviceManager::getInstance();
-
-    if ("Net Access Dynamic" == appLayer.getType())
-    {
-        Log::print("Net Access Dynamic");
-        if (!subDevManager.creatSubDev(appLayer.getSn(), ver))
-        {
-            msgDev = new MsgDev(packNetAccessAck(1, 0, 0));
-            goto exit;
-        }
-        msgDev = new MsgDev(packNetAccessAck(0,
-                                             subDevManager.getNid(appLayer.getSn()),
-                                             subDevManager.getZid(appLayer.getSn())));
-    }
-    else if ("Net Access Static" == appLayer.getType())
-    {
-        Log::print("Net Access Static");
-        uint16_t zid = src[20] << 8 | src[21];
-        if (!subDevManager.creatSubDev(appLayer.getSn(), ver))
-        {
-            msgDev = new MsgDev(packNetAccessAck(1, 0));
-            goto exit;
-        }
-        msgDev = new MsgDev(packNetAccessAck(0, subDevManager.getNid(appLayer.getSn())));
-    }
-    else
-    {
-    }
-
-exit:
-    return msgDev;
-}
-
-Msg *ProtocolStack::getDeviceMsg(const vector<uint8_t> &src)
-{
-    Msg *msg = NULL;
-    string ret;
-
-    ZigNetLayer netLayer(src);
+    ZigNetLayer netLayer(msg);
     if (!netLayer.unpack())
     {
         Log::print("NetLayer unpack failed");
-        return NULL;
+        return;
     }
 
     ZigTransLayer transLayer(netLayer.getData());
     if (!transLayer.unpack())
     {
         Log::print("TransLayer unpack failed");
-        return NULL;
-    }
-
-    SubDeviceManager &subDevManager = SubDeviceManager::getInstance();
-    if (!subDevManager.verify(transLayer.getSrcNid()))
-    {
-        Log::print("Verify failed");
-        return NULL;
+        return ;
     }
 
     ZigAppLayer appLayer(transLayer.getData());
-    msg = devAccessNet(appLayer, transLayer.getProtVer(), appLayer.getData());
 
-    return msg;
+    data_m = appLayer.getData();
+    type_m = appLayer.getType();
+    zid_m = netLayer.getZid();
+    srcNid_m = transLayer.getSrcNid();
+    tarNid_m = transLayer.getTarNid();
+    protVer_m = transLayer.getProtVer();
 }
 
-Msg *ProtocolStack::getDeviceMsg(const string &src)
+ProtocolStackZigbee::~ProtocolStackZigbee()
 {
+
 }
+
+vector<uint8_t> ProtocolStackZigbee::getData()
+{
+
+}
+
+uint16_t ProtocolStackZigbee::getZid()
+{
+
+}
+
+uint32_t ProtocolStackZigbee::getSrcNid()
+{
+
+}
+
+uint32_t ProtocolStackZigbee::getTarNid()
+{
+
+}
+
+uint16_t ProtocolStackZigbee::getProtVer()
+{
+
+}
+
+uint16_t ProtocolStackZigbee::getType()
+{
+
+}
+
 
 /* ----- End of file ----- */
