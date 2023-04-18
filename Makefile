@@ -12,7 +12,9 @@ SHARED_LIB_PATH=	-L ./lib \
 					-L /home/yjj/library/paho.mqtt.c-master/install/feiling/lib \
 					-L /home/yjj/work/gw/lib/libcurl/lib \
 					-L /home/yjj/library/src/openssl-1.1.0l/install/lib \
-					-L  /home/yjj/work/gw/lib/libcurl/lib  -Wl,-rpath=$(RPATH)
+					-L /home/yjj/work/gw/lib/libcurl/lib  -Wl,-rpath=$(RPATH) \
+					-L /home/yjj/work/gw/db/inc \
+					-L /home/yjj/db/sqlite-autoconf-3410200/install/feiling/lib
 
 STATIC_LIB_INC=		-I ./lib/inc
 SHARED_LIB_INC=		-I ./lib/inc \
@@ -27,7 +29,7 @@ TARGET=$(OUT_PATH)gw
 
 
 
-LIB=-lm -lpthread -lrt -lcurl -leasylog -lssl -lcrypto -lpaho-mqtt3as -lpaho-mqtt3c $(STATIC_LIB_PATH)  $(SHARED_LIB_PATH)
+LIB= -lsqlite3 -ldl -lm -lpthread -lrt -lcurl -leasylog -lssl -lcrypto -lpaho-mqtt3as -lpaho-mqtt3c  -luuid   $(STATIC_LIB_PATH)  $(SHARED_LIB_PATH)
 # LIB=-lm -lpthread -lrt -ldl -lpaho-mqtt3as -L $(STATIC_LIB_PATH) -L $(SHARED_LIB_PATH) -Wl,-rpath=$(RPATH)
 CFLAGS= -g -I $(INC_PATH)  $(STATIC_LIB_INC)  $(SHARED_LIB_INC) $(LIB)
 CXXFLAGS= -g3  -I $(INC_PATH)  $(STATIC_LIB_INC)  $(SHARED_LIB_INC) $(LIB) 
@@ -48,7 +50,7 @@ $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp
 	$(CXXC)  -c $< -o $@ $(CXXFLAGS)
 
 $(TARGET): $(COBJS) $(CXXOBJS)
-	$(CXXC) -o  $@ $(CFLAGS) $(CXXFLAGS) $(COBJS) $(CXXOBJS) 
+	$(CXXC) -o  $@  $(CFLAGS) $(CXXFLAGS) $(COBJS) $(CXXOBJS) 
 
 
 .PHONY:install
@@ -75,7 +77,7 @@ $(TEST_OBJ_PATH)/%.o: $(TEST_SRC_PATH)/%.cpp
 	$(CXXC)  -c $< -o $@ $(CXXFLAGS) -I $(TEST_INC_PATH)
 
 $(TEST): $(COBJS) $(CXXOBJS) $(TEST_COBJS)
-	$(CXXC) -o  $@ $(CFLAGS) $(CXXFLAGS) $(COBJS) $(CXXOBJS)  $(TEST_COBJS)
+	$(CXXC) -o  $@   $(COBJS) $(CXXOBJS)  $(TEST_COBJS)  $(CXXFLAGS) 
 
 
 

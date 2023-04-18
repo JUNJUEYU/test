@@ -1,6 +1,7 @@
 #include "threadPool.h"
 #include "log.h"
 
+
 ThreadPool::ThreadPool(int threadNum)
 {
     threadNum_m = threadNum;
@@ -90,7 +91,7 @@ void ThreadPool::joinAll()
 
 ThreadPool &ThreadPool::getInstance()
 {
-    static ThreadPool instance(5);
+    static ThreadPool instance(15);
     return instance;
 }
 

@@ -11,7 +11,7 @@ class SerialPort
         int openPort(const char *devName);
         int setOpt(int nSpeed, int nBits, char nEvent, int nStop);
         int readData(vector<uint8_t> &buf);
-        int writeData(const vector<uint8_t>& buf, int len);
+        int writeData(const vector<uint8_t>& buf);
         bool waitData();
         void closePort();
     private:

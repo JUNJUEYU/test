@@ -1,5 +1,6 @@
 #include "tools.h"
 #include "log.h"
+#include <uuid.h>
 #include <time.h>
 
 uint32_t UtcTime::getUtcTimeStamp()
@@ -50,4 +51,13 @@ bool Sum::operator==(uint8_t sum)
 bool Sum::operator!=(uint8_t sum)
 {
     return sum_m != sum;
+}
+
+string Uuid::creatUuid()
+{
+    uuid_t uuid;
+    char uuidStr[37];
+    uuid_generate(uuid);
+    uuid_unparse(uuid, uuidStr);
+    return string(uuidStr);
 }

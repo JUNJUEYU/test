@@ -49,8 +49,7 @@ class ZigAppLayer
 {
     public:
         ZigAppLayer(const vector<uint8_t> &);
-        ZigAppLayer(uint8_t, uint32_t);
-        ZigAppLayer(uint8_t, uint32_t, uint16_t);
+        ZigAppLayer(uint16_t type, uint16_t msgID, const vector<uint8_t> &data);
         vector<uint8_t> getData();
         uint16_t getType();
         uint16_t getMsgID();
@@ -62,25 +61,10 @@ class ZigAppLayer
         vector<uint8_t> outData_m;
 };
 
-// class ProtocolStack
-// {
-//     public:
-//         Msg *getDeviceMsg(const vector<uint8_t> &);
-//         Msg *getDeviceMsg(const string &);
-
-
-
-//     private:
-//         vector<uint8_t> packNetAccessAck(uint8_t, uint32_t);
-//         vector<uint8_t> packNetAccessAck(uint8_t, uint32_t, uint16_t);
-//         MsgDev *devAccessNet(ZigAppLayer &appLayer, uint16_t ver, const vector<uint8_t> &src);
-
-// };
-
-class ProtocolStackZigbee{
+class zigProtStack{
     public:
-        ProtocolStackZigbee(const vector<uint8_t> &data);
-        ~ProtocolStackZigbee();
+        zigProtStack(const vector<uint8_t> &data);
+        ~zigProtStack();
 
         vector<uint8_t> getData();
         uint16_t getZid();
@@ -88,14 +72,37 @@ class ProtocolStackZigbee{
         uint32_t getTarNid();
         uint16_t getProtVer();
         uint16_t getType();
+        uint16_t getMsgID(){
+            return msgID_m;
+        };
+        bool parse();
+
+        void setZid(uint16_t zid);
+        void setProtVer(uint16_t protVer);
+        void setSrcNid(uint32_t srcNid);
+        void setTarNid(uint32_t tarNid);
+        void setType(uint16_t type);
+        void setMsgID(uint16_t msgID);
+        void setParam(uint16_t zid, uint16_t protVer, uint32_t srcNid, uint32_t tarNid, uint16_t type, uint16_t msgID){
+            zid_m = zid;
+            protVer_m = protVer;
+            srcNid_m = srcNid;
+            tarNid_m = tarNid;
+            type_m = type;
+            msgID_m = msgID;
+            pack();
+        };
+        bool pack();
     
     private:
+        vector<uint8_t> rawData_m;
         vector<uint8_t> data_m;
         uint16_t zid_m;
         uint32_t srcNid_m;
         uint32_t tarNid_m;
         uint16_t protVer_m;
         uint16_t type_m;
+        uint16_t msgID_m;
 };
 
 /* ----- End of file ----- */

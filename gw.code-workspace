@@ -42,7 +42,9 @@
 			"typeinfo": "cpp",
 			"list": "cpp",
 			"string": "cpp",
-			"mutex": "cpp"
+			"mutex": "cpp",
+			"condition_variable": "cpp",
+			"thread": "cpp"
 		}
 	}
 }

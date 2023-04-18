@@ -17,13 +17,11 @@ SerialPort::~SerialPort()
 
 int SerialPort::openPort(const char *devName)
 {
-    serialFd_m = open(devName, O_RDWR | O_NOCTTY | O_NDELAY);
+    serialFd_m = open(devName, O_RDWR | O_NOCTTY | O_NDELAY | O_NONBLOCK);
     if (serialFd_m < 0)
     {
-        Log::print("open failed devName = ", devName);
         return -1;
     }
-    Log::print("open success devName = ", devName);
 
     epollFd_m = epoll_create(1); 
     struct epoll_event ev, events[1];
@@ -39,7 +37,7 @@ int SerialPort::setOpt(int nSpeed, int nBits, char nEvent, int nStop)
     struct termios newtio, oldtio;
     if (tcgetattr(serialFd_m, &oldtio) != 0)
     {
-        Log::print("tcgetattr failed");
+        log_d("tcgetattr failed");
         return -1;
     }
     bzero(&newtio, sizeof(newtio));
@@ -100,6 +98,26 @@ int SerialPort::setOpt(int nSpeed, int nBits, char nEvent, int nStop)
         cfsetospeed(&newtio, B9600);
         break;
     }
+
+    if (nStop == 1)
+    {
+        newtio.c_cflag &= ~CSTOPB;
+    }
+    else if (nStop == 2)
+    {
+        newtio.c_cflag |= CSTOPB;
+    }
+
+    newtio.c_cc[VTIME] = 0;
+    newtio.c_cc[VMIN] = 0;
+    tcflush(serialFd_m, TCIFLUSH);
+    if ((tcsetattr(serialFd_m, TCSANOW, &newtio)) != 0)
+    {
+        log_d("tcsetattr failed");
+        return -1;
+    }
+    log_d("setOpt success");
+    return 0;
 }
 
 int SerialPort::readData(vector<uint8_t> &outBuf)
@@ -108,23 +126,21 @@ int SerialPort::readData(vector<uint8_t> &outBuf)
     int ret = read(serialFd_m, buf, 200);
     if (ret < 0)
     {
-        Log::print("read failed");
+        log_d("read failed");
         return -1;
     }
     outBuf = vector<uint8_t>(buf, buf + ret);
-    Log::print("read success",outBuf);
     return ret;
 }
 
-int SerialPort::writeData(const vector<uint8_t> &buf, int len)
+int SerialPort::writeData(const vector<uint8_t> &buf)
 {
-    int ret = write(serialFd_m, buf.data(), len);
+    int ret = write(serialFd_m, buf.data(), buf.size());
     if (ret < 0)
     {
-        Log::print("send failed");
+        log_d("send failed");
         return -1;
     }
-    Log::print("send success", buf);
     return ret;
 }
 
@@ -147,7 +163,7 @@ bool SerialPort::waitData()
     }
     else if (nfds < 0)
     {
-        Log::print("epoll_wait failed");
+        log_d("epoll_wait failed");
         return false;
     }
     else

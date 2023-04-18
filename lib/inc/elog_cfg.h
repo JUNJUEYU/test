@@ -32,13 +32,13 @@
 /* enable log output. default open this macro */
 #define ELOG_OUTPUT_ENABLE
 /* enable terminal output. default open this macro */
-// #define ELOG_TERMINAL_ENABLE
+#define ELOG_TERMINAL_ENABLE
 /* enable log write file. default open this macro */
 #define ELOG_FILE_ENABLE
 /* enable flush file cache. default open this macro */
 #define ELOG_FILE_FLUSH_CACHE_ENABLE
 /* setting static output log level */
-#define ELOG_OUTPUT_LVL                      ELOG_LVL_ERROR
+#define ELOG_OUTPUT_LVL                      ELOG_LVL_DEBUG
 /* enable assert check */
 #define ELOG_ASSERT_ENABLE
 /* buffer size for every line's log */

@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include <pthread.h>
+//sprintf
+#include <stdio.h>
 
 using namespace std;
 
@@ -83,6 +85,41 @@ class Lock{
         };
     private:
         pthread_mutex_t &mutex_m;
+};
+
+class Trans{
+    public:
+        static string toString(const vector<uint8_t> &data){
+            string str;
+            for(vector<uint8_t>::const_iterator it = data.begin(); it != data.end(); it++){
+                str += *it;
+            }
+            return str;
+        };
+
+        static string toString(const vector<uint8_t> &data, uint16_t start, uint16_t len){
+            string str;
+            for(uint16_t i = start; i < start + len; i++){
+                str += data[i];
+            }
+            return str;
+        };
+
+        static string toHexString(const vector<uint8_t> &data){
+            string str;
+            for(vector<uint8_t>::const_iterator it = data.begin(); it != data.end(); it++){
+                char buf[4];
+                sprintf(buf, "%02x ", *it);
+                str += buf;
+            }
+            return str;
+        };
+};
+
+
+class Uuid{
+    public:
+        static string creatUuid();
 };
 
 /* ----- End of file ----- */

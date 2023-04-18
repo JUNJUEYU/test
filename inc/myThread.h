@@ -17,7 +17,7 @@ public:
     void join()
     {
         pthread_join(threadId_m, NULL);
-        Log::print("Thread::join");
+        log_d("Thread::join");
     };
     virtual void run() = 0;
 

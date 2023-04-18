@@ -10,6 +10,8 @@ Mqtt::Mqtt(const char *server, const char *clientID)
     MQTTClient_create(&client, server, clientID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
     conn_opts.keepAliveInterval = 20;
     conn_opts.cleansession = 1;
+    conn_opts.username = MQTT_USER;
+    conn_opts.password = MQTT_PASS;
     isConnected_m = false;
 }
 

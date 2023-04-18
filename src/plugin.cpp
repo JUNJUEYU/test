@@ -13,7 +13,7 @@ static void findAllPlugins(const std::string& path, std::list<std::string>& plug
     struct dirent *ptr;
     if ((dir = opendir(path.c_str())) == NULL)
     {
-        Log::print("Open dir error...");
+        log_d("Open dir error...");
         return;
     }
 

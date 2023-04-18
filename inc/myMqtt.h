@@ -3,6 +3,11 @@
 #include "MQTTAsync.h"
 #include "MQTTClientPersistence.h"
 
+#define MQTT_SERVER "mqtts://52.80.92.198:1884"
+#define MQTT_USER "admin"
+#define MQTT_PASS "Alsi-iot-123"
+#define MQTT_CLIENTID "iot-gw-001"
+#define MQTT_TOPIC "/1/2/3"
 
 
 class Mqtt{

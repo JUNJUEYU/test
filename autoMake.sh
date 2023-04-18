@@ -1,5 +1,6 @@
 #!/bin/bash
 
 # make clean
-make
-cp ./install/gw ~/share/
+make test
+# cp ./install/gw ~/share/
+cp ./test/out/test ~/share/
