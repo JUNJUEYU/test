@@ -5,124 +5,206 @@
 #include "MQTTAsync.h"
 #include "MQTTClientPersistence.h"
 
-Mqtt::Mqtt(const char *server, const char *clientID)
+static recvCallback_t recvCallback_g = NULL;
+
+static void onConnectSuccess(void *context, MQTTAsync_successData *response)
 {
-    MQTTClient_create(&client, server, clientID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    conn_opts.keepAliveInterval = 20;
-    conn_opts.cleansession = 1;
-    conn_opts.username = MQTT_USER;
-    conn_opts.password = MQTT_PASS;
-    isConnected_m = false;
+    log_d("onConnectSuccess");
+}
+
+static void onConnectFailure(void *context, MQTTAsync_failureData *response)
+{
+    log_d("onConnectFailure");
+}
+
+static void onDisconnectSuccess(void *context, MQTTAsync_successData *response)
+{
+    log_d("onDisconnectSuccess");
+}
+
+static void onDisconnectFailure(void *context, MQTTAsync_failureData *response)
+{
+    log_d("onDisconnectFailure");
+}
+
+static void onSubscribeSuccess(void *context, MQTTAsync_successData *response)
+{
+    log_d("onSubscribeSuccess");
+}
+
+static void onSubscribeFailure(void *context, MQTTAsync_failureData *response)
+{
+    log_d("onSubscribeFailure");
+}
+
+static void onUnsubscribeSuccess(void *context, MQTTAsync_successData *response)
+{
+    log_d("onUnsubscribeSuccess");
+}
+
+static void onUnsubscribeFailure(void *context, MQTTAsync_failureData *response)
+{
+    log_d("onUnsubscribeFailure");
+}
+
+static void onConnectionLost(void *context, char *cause)
+{
+    log_d("onConnectionLost");
+}
+
+static int onMessageArrived(void *context, char *topicName, int topicLen, MQTTAsync_message *message)
+{
+    log_d("onMessageArrived");
+    if (recvCallback_g != NULL)
+    {
+        string topic(topicName);
+        string msg((char *)message->payload);
+        recvCallback_g(topic, msg);
+    }
+    return 1;
+}
+
+static void onDeliveryComplete(void *context, MQTTAsync_token token)
+{
+    log_d("onDeliveryComplete");
+}
+
+Mqtt &Mqtt::getInstance()
+{
+    static Mqtt instance(MQTT_SERVER, MQTT_CLIENTID);
+    return instance;
+}
+
+Mqtt::Mqtt(const char *server, const char *clientid):client_m(NULL), rc_m(0), connected_m(false)
+{
+    MQTTAsync_connectOptions connOpts = MQTTAsync_connectOptions_initializer;
+    MQTTAsync_disconnectOptions discOpts = MQTTAsync_disconnectOptions_initializer;
+    MQTTAsync_responseOptions respOpts = MQTTAsync_responseOptions_initializer;
+    MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
+
+    connOpts_m = connOpts;
+    discOpts_m = discOpts;
+    respOpts_m = respOpts;
+    pubmsg_m = pubmsg;
+    connected_m = false;
+
+    connOpts_m.keepAliveInterval = 100;
+    connOpts_m.cleansession = 1;
+    connOpts_m.onSuccess = onConnectSuccess;
+    connOpts_m.onFailure = onConnectFailure;
+    connOpts_m.username = MQTT_USER;
+    connOpts_m.password = MQTT_PASS;
+    connOpts_m.context = client_m;
+    discOpts_m.onSuccess = onDisconnectSuccess;
+    discOpts_m.onFailure = onDisconnectFailure;
+    discOpts_m.context = client_m;
+    respOpts_m.onSuccess = onSubscribeSuccess;
+    respOpts_m.onFailure = onSubscribeFailure;
+    respOpts_m.context = client_m;
+    pubmsg_m.qos = 1;
+    pubmsg_m.retained = 0;
+    pubmsg_m.payload = NULL;
+    pubmsg_m.payloadlen = 0;
+    token_m = 0;
+
+    rc_m = MQTTAsync_create(&client_m, server, clientid, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    rc_m = MQTTAsync_setCallbacks(client_m, NULL, onConnectionLost, onMessageArrived, onDeliveryComplete);
+    if(rc_m != MQTTASYNC_SUCCESS)
+    {
+        log_e("MQTTAsync_setCallbacks failed, rc_m=%d", rc_m);
+    }
+    log_d("MQTTAsync_setCallbacks success");
+
+    connect();
 }
 
 Mqtt::~Mqtt()
 {
-    MQTTClient_destroy(&client);
+    MQTTAsync_destroy(&client_m);
 }
 
-bool Mqtt::connect()
+void Mqtt::connect()
 {
-    int rc = MQTTClient_connect(client, &conn_opts);
-    if (rc != MQTTCLIENT_SUCCESS)
+    rc_m = MQTTAsync_connect(client_m, &connOpts_m);
+    if(rc_m != MQTTASYNC_SUCCESS)
     {
-        isConnected_m = false;
-        return false;
+        log_e("MQTTAsync_connect failed, rc_m=%d", rc_m);
     }
-    else
-    {
-        isConnected_m = true;
-        return true;
+    else {
+        log_d("MQTTAsync_connect success");
+        connected_m = true;
     }
+    usleep(500000);
 }
 
-bool Mqtt::disconnect()
+void Mqtt::reConnect()
 {
-    int rc = MQTTClient_disconnect(client, 10000);
-    if (rc != MQTTCLIENT_SUCCESS)
+    rc_m = MQTTAsync_disconnect(client_m, &discOpts_m);
+    rc_m = MQTTAsync_connect(client_m, &connOpts_m);
+    if(rc_m != MQTTASYNC_SUCCESS)
     {
-        isConnected_m = false;
-        return false;
+        log_e("MQTTAsync_connect failed, rc_m=%d", rc_m);
     }
-    else
-    {
-        isConnected_m = false;
-        return true;
+    else {
+        log_d("MQTTAsync_connect success");
+        connected_m = true;
     }
 }
 
-bool Mqtt::publish(const char *topic, const char *msg)
+void Mqtt::publish(const char *topic, const char *msg)
 {
-    if (!isConnected_m)
+    while(!connected_m)
     {
-        return false;
+        log_e("MQTT not connected");
+        usleep(10000);
     }
-    pubmsg.payload = (void *)msg;
-    pubmsg.payloadlen = strlen(msg);
-    pubmsg.qos = 1;
-    pubmsg.retained = 0;
-    int rc = MQTTClient_publishMessage(client, topic, &pubmsg, &token);
-    if (rc != MQTTCLIENT_SUCCESS)
+
+    pubmsg_m.payload = (void *)msg;
+    pubmsg_m.payloadlen = strlen(msg);
+    rc_m = MQTTAsync_sendMessage(client_m, topic, &pubmsg_m, &respOpts_m);
+    if (rc_m != MQTTASYNC_SUCCESS)
     {
-        return false;
+        log_e("MQTTAsync_sendMessage failed, rc_m=%d", rc_m);
     }
-    else
-    {
-        return true;
+    else{
+        log_d("MQTTAsync_sendMessage success");
     }
 }
 
-bool Mqtt::subscribe(const char *topic)
+void Mqtt::subscribe(const char *topic)
 {
-    if (!isConnected_m)
+    while(!connected_m)
     {
-        return false;
+        log_e("MQTT not connected");
+        usleep(10000);
     }
-    int rc = MQTTClient_subscribe(client, topic, 1);
-    if (rc != MQTTCLIENT_SUCCESS)
+    
+    rc_m = MQTTAsync_subscribe(client_m, topic, 1, &respOpts_m);
+    if (rc_m != MQTTASYNC_SUCCESS)
     {
-        return false;
+        log_e("MQTTAsync_subscribe failed, rc_m=%d", rc_m);
     }
-    else
-    {
-        return true;
+    else{
+        log_d("MQTTAsync_subscribe success");
     }
 }
 
-bool Mqtt::unsubscribe(const char *topic)
+void Mqtt::unsubscribe(const char *topic)
 {
-    if (!isConnected_m)
+    rc_m = MQTTAsync_unsubscribe(client_m, topic, &respOpts_m);
+    if (rc_m != MQTTASYNC_SUCCESS)
     {
-        return false;
+        log_e("MQTTAsync_unsubscribe failed, rc_m=%d", rc_m);
     }
-    int rc = MQTTClient_unsubscribe(client, topic);
-    if (rc != MQTTCLIENT_SUCCESS)
-    {
-        return false;
-    }
-    else
-    {
-        return true;
+    else{
+        log_d("MQTTAsync_unsubscribe success");
     }
 }
 
-bool Mqtt::isConnected()
+void Mqtt::setRecvCallback(recvCallback_t callback)
 {
-    return isConnected_m;
+    recvCallback_g = callback;
 }
-
-void Mqtt::setCallback(void (*callback)(char *topic, char *msg))
-{
-    callback_m = callback;
-    MQTTClient_setCallbacks(client, NULL, NULL,(MQTTClient_messageArrived *)callback_m, NULL);
-}
-
-void Mqtt::loop()
-{
-    MQTTClient_yield();
-}
-
-
-
 
 
 /* ----- End of file ----- */

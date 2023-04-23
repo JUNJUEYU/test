@@ -3,6 +3,8 @@
 CC = arm-none-linux-gnueabi-gcc
 CXXC = arm-none-linux-gnueabi-g++
 
+
+# 所有文件夹
 OBJ_PATH=./obj
 SRC_PATH=./src
 INC_PATH=./inc
@@ -50,13 +52,19 @@ $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp
 	$(CXXC)  -c $< -o $@ $(CXXFLAGS)
 
 $(TARGET): $(COBJS) $(CXXOBJS)
-	$(CXXC) -o  $@  $(CFLAGS) $(CXXFLAGS) $(COBJS) $(CXXOBJS) 
+	$(CXXC) -o  $@    $(COBJS) $(CXXOBJS) $(CXXFLAGS)
 
 
 .PHONY:install
 install:
 	cp $(TARGET) $(OUT_PATH)
 
+.PHONY:show
+show:
+	@echo $(COBJS)
+	@echo $(CXXOBJS)
+	@echo $(CSRCS)
+	@echo $(CXXSRCS)
 
 TEST=./test/out/test
 TEST_OBJ_PATH=./test/obj

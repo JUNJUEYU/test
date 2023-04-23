@@ -44,7 +44,11 @@
 			"string": "cpp",
 			"mutex": "cpp",
 			"condition_variable": "cpp",
-			"thread": "cpp"
+			"thread": "cpp",
+			"chrono": "cpp",
+			"ctime": "cpp",
+			"iomanip": "cpp",
+			"ratio": "cpp"
 		}
 	}
 }

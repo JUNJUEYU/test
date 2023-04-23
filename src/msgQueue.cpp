@@ -89,7 +89,7 @@ int DevMsgRecvQueue::pushMsg(vector<uint8_t> msg)
     return msg.size();
 }
 
-BlockQueue::BlockQueue(uint32_t timeout) : timeout_m(timeout) 
+BlockQueue::BlockQueue()
 {
 }
 

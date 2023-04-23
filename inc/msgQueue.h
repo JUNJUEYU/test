@@ -79,7 +79,7 @@ private:
 
 class BlockQueue : public MessageQueue<string> {
 public:
-    BlockQueue(uint32_t timeout = 0);
+    BlockQueue();
     int waitMsg(string &msg, uint32_t timeout);
     int pushMsg(string msg);
 private:

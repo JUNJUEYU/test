@@ -1,0 +1,27 @@
+{
+	"100101": [{
+			"num": 1,
+			"type": "uint8"
+		},
+		{
+			"num": 2,
+			"type": "uint16"
+		},
+		{
+			"num": 3,
+			"type": "uint32"
+		},
+		{
+			"num": 4,
+			"type": "string"
+		}
+	],
+	"100102": [{
+		"num": 1,
+		"type": "uint8"
+	},
+	{
+		"num": 2,
+		"type": "float"
+	}]
+}

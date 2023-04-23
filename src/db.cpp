@@ -321,12 +321,21 @@ bool Db::randomNid(uint32_t &nid)
     Sql sql(dbPath_m);
     string sqlStr = "select nid from nidlist";
     Stmt stmt(sql, sqlStr);
-    if(stmt.step() == SQLITE_ROW){
-        nid = stmt.getInt(0);
-        return true;
+    if(stmt.step() != SQLITE_ROW){
+        
+        return false;
     }
 
-    return false;
+    nid = stmt.getInt(0);
+    string sqlStr1 = "delete from nidlist where nid = ?";
+    Stmt stmt1(sql, sqlStr1);
+    stmt1.bindInt(1, nid);
+    if(stmt1.step() != SQLITE_DONE){
+        log_e("delete from nidlist failed");
+        return false;
+    }
+
+    return true;
 }
 
 bool Db::randomZid(uint16_t &zid)
@@ -335,11 +344,30 @@ bool Db::randomZid(uint16_t &zid)
     string sqlStr = "select zid from zidlist";
     Stmt stmt(sql, sqlStr);
     if(stmt.step() == SQLITE_ROW){
-        zid = stmt.getInt(0);
-        return true;
+        return false;
+    }
+    zid = stmt.getInt(0);
+    string sqlStr1 = "delete from zidlist where zid = ?";
+    Stmt stmt1(sql, sqlStr1);
+    stmt1.bindInt(1, zid);
+    if(stmt1.step() != SQLITE_DONE){
+        log_e("delete from zidlist failed");
+        return false;
     }
 
-    return false;
+    return true;
+}
+
+string Db::getGwSn()
+{
+    Sql sql(dbPath_m);
+    string sqlStr = "select sn from basic";
+    Stmt stmt(sql, sqlStr);
+    if(stmt.step() == SQLITE_ROW){
+        return stmt.getText(0);
+    }
+
+    return "";
 }
 
 

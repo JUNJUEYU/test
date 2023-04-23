@@ -1,17 +1,15 @@
 #include "task.h"
-#include "eventInterface.h"
 #include <memory>
+#include "msgQueue.h"
 
 
 void *task(void *arg)
 {
-    if(arg == NULL){
-        return NULL;
+    for(;;){
+        vector<uint8_t> msg;
+        DevMsgRecvQueue::getInstance().waitMsg(msg);
+        
     }
-
-    auto_ptr<Event> event((Event *)arg);
-    event->run();
-    return NULL;
 }
 
 /* ----- End of file ----- */

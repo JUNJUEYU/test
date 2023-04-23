@@ -2,33 +2,42 @@
 #include "MQTTClient.h"
 #include "MQTTAsync.h"
 #include "MQTTClientPersistence.h"
+#include <string>
+using namespace std;
 
-#define MQTT_SERVER "mqtts://52.80.92.198:1884"
+#define MQTT_SERVER "mqtt://192.168.0.2:1883"
 #define MQTT_USER "admin"
-#define MQTT_PASS "Alsi-iot-123"
+#define MQTT_PASS "123456"
 #define MQTT_CLIENTID "iot-gw-001"
 #define MQTT_TOPIC "/1/2/3"
 
+typedef void *(*recvCallback_t)(string &topic, string &msg);
 
 class Mqtt{
     public:
-        Mqtt(const char *server, const char *clientID);
-        ~Mqtt();
-        bool connect();
-        bool disconnect();
-        bool publish(const char *topic, const char *msg);
-        bool subscribe(const char *topic);
-        bool unsubscribe(const char *topic);
-        bool isConnected();
-        void setCallback(void (*callback)(char *topic, char *msg));
-        void loop();
+        static Mqtt &getInstance();
+        void connect();
+        void reConnect();
+        void publish(const char *topic, const char *msg);
+        void subscribe(const char *topic);
+        void unsubscribe(const char *topic);
+        void setRecvCallback(recvCallback_t callback);
+
     private:
-        MQTTClient client;
-        MQTTClient_connectOptions conn_opts;
-        MQTTClient_message pubmsg;
-        MQTTClient_deliveryToken token;
-        bool isConnected_m;
-        void (*callback_m)(char *topic, char *msg);
+
+    private:
+        Mqtt(const char *server, const char *clientid);
+        ~Mqtt();
+        Mqtt &operator=(const Mqtt &mqtt);
+        Mqtt(const Mqtt &mqtt);
+        MQTTAsync client_m;
+        MQTTAsync_connectOptions connOpts_m ;
+        MQTTAsync_disconnectOptions discOpts_m;
+        MQTTAsync_responseOptions respOpts_m ;
+        MQTTAsync_message pubmsg_m;
+        MQTTAsync_token token_m;
+        int rc_m;
+        bool connected_m;
 };
 
 

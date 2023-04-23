@@ -1,0 +1,61 @@
+{
+    "command": [
+        {
+            "reg": "300101",
+            "name": "reset",
+            "param": [
+                {
+                    "name": "status",
+                    "num": 1,
+                    "type": "uint8"
+                }
+            ]
+        }
+    ],
+
+    "property":[
+        {
+            "reg": "100101",
+            "name": "runstatus",
+            "rw":"r",
+            "param": [
+                {
+                    "name": "status",
+                    "num": 1,
+                    "type": "uint8"
+                }
+            ]
+        }
+    ],
+
+    "event":[
+        {
+            "reg": "2001",
+            "type":"DI",
+            "object":"DI1",
+            "name": "COLLECT_IN",
+            "param": [
+                {
+                    "name": "time_stamp",
+                    "num": 1,
+                    "type": "uint32"
+                },
+                {
+                    "name":"value",
+                    "num":2,
+                    "type":"uint32"
+                },
+                {
+                    "name":"count",
+                    "num":3,
+                    "type":"uint32"
+                },
+                {
+                    "name":"time",
+                    "num":4,
+                    "type":"uint32"
+                }
+            ]
+        }
+    ]
+}

@@ -1,5 +1,4 @@
 #pragma once
 
-void *taskDevMsgProcess(void *arg);
+void *taskZigUp(void *arg);
 /* ----- End of file ----- */
-

@@ -114,6 +114,22 @@ class Trans{
             }
             return str;
         };
+
+        static int toInt(string data){
+            int ret = 0;
+            for(string::const_iterator it = data.begin(); it != data.end(); it++){
+                ret = ret * 10 + (*it - '0');
+            }
+            return ret;
+        };
+
+        static int toHexInt(string data){
+            int ret = 0;
+            for(string::const_iterator it = data.begin(); it != data.end(); it++){
+                ret = ret * 16 + (*it - '0');
+            }
+            return ret;
+        };
 };
 
 

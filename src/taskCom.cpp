@@ -4,6 +4,7 @@
 #include "msgQueue.h"
 #include <sys/epoll.h>
 #include <unistd.h>
+#include "zigbee.h"
 
 SerialPort *pSerialPort_g = NULL;
 
@@ -31,8 +32,26 @@ void *taskComRead(void *arg)
         }
         log_d("wait data success");
         
+        
         vector<uint8_t> data;
         pSerialPort_g->readData(data);
+        if(0 == data.size()){
+            log_d("read data error");
+            continue;
+        }
+        Log::print("wait data success", data);
+
+        ZigMsg_t *pZigMsg = (ZigMsg_t *)data.data();
+        if(pZigMsg->netLayer.head != 0xD1AA){
+            log_d("zigbee msg head error");
+            continue;
+        }
+        if (data.back() != 0x55){
+            log_d("zigbee msg tail error");
+            continue;
+        }
+        data.pop_back();
+
         DevMsgRecvQueue::getInstance().pushMsg(data); 
     }
 }
@@ -52,6 +71,7 @@ void *taskComSend(void *arg)
             log_d("send msg length = 0");
             continue;
         }
+
 
         pSerialPort_g->writeData(msg);
     }

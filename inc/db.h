@@ -21,6 +21,7 @@ class Db{
         string getDevName(const string &sn);
         bool randomNid(uint32_t &nid);
         bool randomZid(uint16_t &zid);
+        string getGwSn();
 
     private:
         bool init();
