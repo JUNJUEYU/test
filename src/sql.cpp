@@ -98,8 +98,8 @@ string Stmt::getText(int index)
 {
     const char *text = (const char *)sqlite3_column_text(stmt_m, index);
     return string(text);
-}
 
+}
 vector<uint8_t> Stmt::getBlob(int index)
 {
     const uint8_t *blob = (const uint8_t *)sqlite3_column_blob(stmt_m, index);

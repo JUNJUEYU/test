@@ -1,0 +1,47 @@
+{
+    "property":[
+        {
+            "name": "DI1",
+            "type": "uint8",
+            "reg": "2001",
+            "rw": "r"
+        },
+        {
+            "name": "DI2",
+            "type": "uint8",
+            "reg": "2002",
+            "rw": "r"
+        }
+    ],
+
+    "event":  [
+        {
+            "name": "COLLECT_IN",
+            "item": [
+                {
+                    "type": "DI",
+                    "object": "DI1",
+                    "reg": "2001"
+                },
+                {
+                    "type": "DI",
+                    "object": "DI2",
+                    "reg": "2002"
+                }
+            ]
+        }
+    ],
+    "command": [
+        {
+            "name": "reset",
+            "reg": "0101",
+            "param": [
+                {
+                    "name": "value",
+                    "offset": 0,
+                    "type": "uint8"
+                }
+            ]
+        }
+    ]
+}

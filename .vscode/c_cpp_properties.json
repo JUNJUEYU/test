@@ -9,7 +9,8 @@
                 "${workspaceFolder}/db/inc",
                 "/home/yjj/library/paho.mqtt.c-master/install/feiling/include",
                 "${workspaceFolder}/inc",
-                "${workspaceFolder}/src/*/"
+                "${workspaceFolder}/src/*/",
+                "${workspaceFolder}/lib/libcurl/include/"
             ],
             "defines": [],
             "compilerPath": "/home/yjj/tool/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-g++",

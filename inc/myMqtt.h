@@ -3,6 +3,7 @@
 #include "MQTTAsync.h"
 #include "MQTTClientPersistence.h"
 #include <string>
+#include <vector>
 using namespace std;
 
 #define MQTT_SERVER "mqtt://192.168.0.2:1883"
@@ -18,12 +19,15 @@ class Mqtt{
         static Mqtt &getInstance();
         void connect();
         void reConnect();
-        void publish(const char *topic, const char *msg);
-        void subscribe(const char *topic);
         void unsubscribe(const char *topic);
         void setRecvCallback(recvCallback_t callback);
+        void subscribe(const string &topic);
+        void publish(const string &topic, const string &msg);
+        void reSubscribe();
 
     private:
+        void pub(const char *topic, const char *msg);
+        void sub(const char *topic);
 
     private:
         Mqtt(const char *server, const char *clientid);
@@ -38,6 +42,7 @@ class Mqtt{
         MQTTAsync_token token_m;
         int rc_m;
         bool connected_m;
+        vector<string> subTopics_m;
 };
 
 

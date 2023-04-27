@@ -10,6 +10,8 @@ static recvCallback_t recvCallback_g = NULL;
 static void onConnectSuccess(void *context, MQTTAsync_successData *response)
 {
     log_d("onConnectSuccess");
+    Mqtt &mqtt = Mqtt::getInstance();
+    mqtt.reSubscribe();
 }
 
 static void onConnectFailure(void *context, MQTTAsync_failureData *response)
@@ -50,6 +52,13 @@ static void onUnsubscribeFailure(void *context, MQTTAsync_failureData *response)
 static void onConnectionLost(void *context, char *cause)
 {
     log_d("onConnectionLost");
+    Mqtt &mqtt = Mqtt::getInstance();
+    mqtt.connect();
+
+    if (cause != NULL)
+    {
+        log_d("onConnectionLost: %s", cause);
+    }
 }
 
 static int onMessageArrived(void *context, char *topicName, int topicLen, MQTTAsync_message *message)
@@ -151,7 +160,7 @@ void Mqtt::reConnect()
     }
 }
 
-void Mqtt::publish(const char *topic, const char *msg)
+void Mqtt::pub(const char *topic, const char *msg)
 {
     while(!connected_m)
     {
@@ -171,7 +180,7 @@ void Mqtt::publish(const char *topic, const char *msg)
     }
 }
 
-void Mqtt::subscribe(const char *topic)
+void Mqtt::sub(const char *topic)
 {
     while(!connected_m)
     {
@@ -206,5 +215,31 @@ void Mqtt::setRecvCallback(recvCallback_t callback)
     recvCallback_g = callback;
 }
 
+void Mqtt::publish(const string &topic, const string &msg)
+{
+    pub(topic.c_str(), msg.c_str());
+}
+
+void Mqtt::subscribe(const string &topic)
+{
+    for(vector<string>::iterator it = subTopics_m.begin(); it != subTopics_m.end(); it++)
+    {
+        if(*it == topic)
+        {
+            log_d("topic %s already subscribed", topic.c_str());
+            return;
+        }
+    }
+    subTopics_m.push_back(topic);
+    sub(topic.c_str());
+}
+
+void Mqtt::reSubscribe()
+{
+    for(vector<string>::iterator it = subTopics_m.begin(); it != subTopics_m.end(); it++)
+    {
+        sub(it->c_str());
+    }
+}
 
 /* ----- End of file ----- */

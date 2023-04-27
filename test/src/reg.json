@@ -1,0 +1,17 @@
+{
+    "reg": [
+        {
+            "addr": 1001,
+            "wr": "wr",
+            "paras": [
+                {
+                    "name": "status",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            
+        }
+    ]
+}
