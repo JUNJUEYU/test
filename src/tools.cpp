@@ -53,6 +53,16 @@ bool Sum::operator!=(uint8_t sum)
     return sum_m != sum;
 }
 
+uint8_t Sum::get(uint16_t top, const vector<uint8_t> &data)
+{
+    uint8_t sum = 0;
+    for(vector<uint8_t>::const_iterator it = data.begin() + top; it != data.end(); it++){
+        sum += *it;
+    }
+
+    return sum;
+}
+
 string Uuid::creatUuid()
 {
     uuid_t uuid;

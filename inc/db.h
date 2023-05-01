@@ -23,6 +23,16 @@ class Db{
         bool randomZid(uint16_t &zid);
         string getGwSn();
 
+        bool isRegLegal(const string &pd, const string &reg, const string &chan);
+        uint8_t getRegParamCount(const string &pd, const string &reg, const string &chan);
+        string getRegParamType(const string &pd, const string &reg, const string &chan, uint8_t index);
+
+        bool isRegInEvent(const string &pd, const string &reg, const string &chan);
+        uint8_t getEventCount(const string &pd, const string &reg, const string &chan);
+        string getEventId(const string &pd, const string &reg, const string &chan, uint8_t index);
+        uint8_t getEventObjCount(const string &pd, const string &eventId);
+
+
     private:
         bool init();
 

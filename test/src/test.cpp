@@ -21,69 +21,69 @@ void getZigbeeId(){
 
 string testJson()
 {
-    char * file = NULL;
-    FILE *fp = fopen(FILE_PATH, "r");
-    if (NULL == fp)
-    {
-        log_i("open file error");
-        return "";
-    }
-    fseek(fp, 0, SEEK_END);
-    long len = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    file = (char *)malloc(len + 1);
-    fread(file, 1, len, fp);
-    file[len] = '\0';
-    fclose(fp);
-    cJSON *root = cJSON_Parse(file);
-    if (NULL == root)
-    {
-        log_i("json parse error");
-        return "";
-    }
-    int size = cJSON_GetArraySize(root);
-    log_i("size = %d", size);
-    for (size_t i = 0; i < size; i++)
-    {
-        uint16_t reg;
-        cJSON *item = cJSON_GetArrayItem(root, i);
-        if (NULL != item)
-        {
-            reg = Trans::toHexInt(string(item->string));
-            ZigReg zigReg(reg);
-            log_i("reg = %04x", reg);
-            int count = cJSON_GetArraySize(item);
-            log_i("count = %d", count);
-            for (size_t j = 0; j < count; j++)
-            {
-                cJSON *item1 = cJSON_GetArrayItem(item, j);
-                if (NULL != item1)
-                {
-                    cJSON *num = cJSON_GetObjectItem(item1, "num");
-                    if (NULL != num)
-                    {
-                        log_i("num = %d", num->valueint);
-                    }
-                    cJSON *type = cJSON_GetObjectItem(item1, "type");
-                    if (NULL != type)
-                    {
-                        log_i("type = %s", type->valuestring);
-                    }
+    // char * file = NULL;
+    // FILE *fp = fopen(FILE_PATH, "r");
+    // if (NULL == fp)
+    // {
+    //     log_i("open file error");
+    //     return "";
+    // }
+    // fseek(fp, 0, SEEK_END);
+    // long len = ftell(fp);
+    // fseek(fp, 0, SEEK_SET);
+    // file = (char *)malloc(len + 1);
+    // fread(file, 1, len, fp);
+    // file[len] = '\0';
+    // fclose(fp);
+    // cJSON *root = cJSON_Parse(file);
+    // if (NULL == root)
+    // {
+    //     log_i("json parse error");
+    //     return "";
+    // }
+    // int size = cJSON_GetArraySize(root);
+    // log_i("size = %d", size);
+    // for (size_t i = 0; i < size; i++)
+    // {
+    //     uint16_t reg;
+    //     cJSON *item = cJSON_GetArrayItem(root, i);
+    //     if (NULL != item)
+    //     {
+    //         reg = Trans::toHexInt(string(item->string));
+    //         ZigReg zigReg(reg);
+    //         log_i("reg = %04x", reg);
+    //         int count = cJSON_GetArraySize(item);
+    //         log_i("count = %d", count);
+    //         for (size_t j = 0; j < count; j++)
+    //         {
+    //             cJSON *item1 = cJSON_GetArrayItem(item, j);
+    //             if (NULL != item1)
+    //             {
+    //                 cJSON *num = cJSON_GetObjectItem(item1, "num");
+    //                 if (NULL != num)
+    //                 {
+    //                     log_i("num = %d", num->valueint);
+    //                 }
+    //                 cJSON *type = cJSON_GetObjectItem(item1, "type");
+    //                 if (NULL != type)
+    //                 {
+    //                     log_i("type = %s", type->valuestring);
+    //                 }
 
-                    ZigData zigData(num->valueint, type->valuestring);
-                    zigReg.addData(zigData);
-                }
-            }
-            for(int i = 0; i < zigReg.getDataSize(); i++){
-                ZigData zigData = zigReg.getData(i);
-                log_i("num = %d, type = %s", zigData.num_m, zigData.type_m.c_str());
-            }
-            ZigRegTable::getInstance().addReg(zigReg);
-        }
-    }    
-    cJSON_Delete(root);
-    free(file);
-    return "";
+    //                 ZigData zigData(num->valueint, type->valuestring);
+    //                 zigReg.addData(zigData);
+    //             }
+    //         }
+    //         for(int i = 0; i < zigReg.getDataSize(); i++){
+    //             ZigData zigData = zigReg.getData(i);
+    //             log_i("num = %d, type = %s", zigData.num_m, zigData.type_m.c_str());
+    //         }
+    //         ZigRegTable::getInstance().addReg(zigReg);
+    //     }
+    // }    
+    // cJSON_Delete(root);
+    // free(file);
+    // return "";
 }
 
 void testTable()

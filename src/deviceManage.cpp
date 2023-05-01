@@ -1,4 +1,5 @@
 #include "deviceManage.h"
+#include "db.h"
 
 string DevManager::getGwPd(){
     return "TG-10_N";
@@ -72,5 +73,20 @@ string TopicManager::subProGet()
 string TopicManager::subProSet()
 {
     return TOPIC_SUB_PRO_SET;
+}
+
+string DevManager::getDevPd(uint32_t nid)
+{
+    return "TG-10_N";
+}
+
+string DevManager::getDevSn(uint32_t nid)
+{
+    return "TG-10_N20230423";
+}
+
+bool DevManager::isInDevList(uint32_t nid)
+{
+    return true;
 }
 

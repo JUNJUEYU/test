@@ -1,0 +1,11 @@
+{
+    "TS-30":[
+        {
+            "reg_id":20,
+            "chan_id":1,
+            "param_id":1,
+            "param_type":"int8",
+            "proprety_name":"TS-30"
+        }
+    ]
+}

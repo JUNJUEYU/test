@@ -14,7 +14,6 @@
 #include "myMqtt.h"
 #include "taskZigUp.h"
 #include "taskMqttRecv.h"
-#include "descTblRegister.h"
 
 using namespace std;
 
@@ -63,20 +62,6 @@ int main(int argc, char **argv)
     Log::init();
     ThreadPool &pool = ThreadPool::getInstance(); 
     DevMsgRecvQueue &devMsgRecvQueue = DevMsgRecvQueue::getInstance();
-    vector<uint8_t> msg;
-    log_e("main start dbver = %s", sqlite3_libversion());  
-    RegisterDescTbl tbl("./register_description_table.json");
-    log_i("getRegDescSize = %d", tbl.getRegDescSize());
-    RegisterDesc regDesc;
-    tbl.getRegDesc(0x2001, regDesc);
-    log_i("regAddr = %04x", regDesc.regAddr_m);
-    log_i("rw = %s", regDesc.rw_m.c_str());
-    for(int i = 0; i < regDesc.proList_m.size(); i++){
-        log_i("name = %s", regDesc.proList_m[i].name_m.c_str());
-        log_i("offest = %d", regDesc.proList_m[i].offest_m);
-        log_i("dataType = %s", regDesc.proList_m[i].dataType_m.c_str());
-    }
-
     Db db;
 
     

@@ -39,6 +39,7 @@ class Sum{
         bool operator==(uint8_t sum);
         bool operator!=(uint8_t sum);
         uint8_t getSum(){return sum_m;};
+        static uint8_t get(uint16_t top, const vector<uint8_t> &data);
 
     private:
         uint8_t check();
@@ -113,6 +114,12 @@ class Trans{
                 str += buf;
             }
             return str;
+        };
+
+        static string toHexString(uint8_t data){
+            char buf[4];
+            sprintf(buf, "%02x ", data);
+            return buf;
         };
 
         static int toInt(string data){

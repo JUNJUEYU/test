@@ -13,7 +13,7 @@ Sql::~Sql()
     sqlite3_close(db_m);
 }
 
-Stmt::Stmt(Sql &sql, const string &sqlStr)
+Stmt::Stmt(Sql &sql, const string &sqlStr):stmt_m(NULL)
 {
     int ret = sqlite3_prepare_v2(sql.db_m, sqlStr.c_str(), -1, &stmt_m, NULL);
     if(ret != SQLITE_OK){
@@ -23,6 +23,7 @@ Stmt::Stmt(Sql &sql, const string &sqlStr)
 
 Stmt::~Stmt()
 {
+    sqlite3_reset(stmt_m);
     sqlite3_finalize(stmt_m);
 }
 
@@ -37,7 +38,7 @@ int Stmt::bindInt(int index, int value)
 
 int Stmt::bindText(int index, const string &value)
 {
-    int ret = sqlite3_bind_text(stmt_m, index, value.c_str(), -1, SQLITE_STATIC);
+    int ret = sqlite3_bind_text(stmt_m, index, value.c_str(), value.size(), SQLITE_STATIC);
     if(ret != SQLITE_OK){
         log_e("sqlite3_bind_text failed, ret = %d", ret);
     }
